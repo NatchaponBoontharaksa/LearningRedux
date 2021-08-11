@@ -1,5 +1,5 @@
-import store from './store';
-import { bugAdded, bugResolved } from './actions';
+import store from './store/store';
+import { bugAdded, bugResolved } from './store/actions';
 
 const unsubscribe = store.subscribe(() => {
     console.log("Store change: " + store.getState())
