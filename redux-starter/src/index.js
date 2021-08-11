@@ -7,13 +7,13 @@ const unsubscribe = store.subscribe(() => {
     console.log("Store change: " + store.getState())
 });
 
-store.dispatch(bugAdded("bug 2"));
+store.dispatch(bugAdded({ descroption: "bug 123"}));
 
 console.log(store.getState());
 
 unsubscribe();
 
-store.dispatch(bugResolved(1));
+store.dispatch(bugResolved({id: 1}));
 
 console.log(store.getState());
 

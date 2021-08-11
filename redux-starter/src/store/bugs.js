@@ -1,29 +1,36 @@
-// Action type
+import { createAction } from "@reduxjs/toolkit";
 
-const BUG_ADDED = "bugAdded";
-const BUG_REMOVED = "bugRemoved"
-const BUG_RESOLVED = "bugResolved"
+// Action type
+// const BUG_ADDED = "bugAdded";
+// const BUG_REMOVED = "bugRemoved"
+// const BUG_RESOLVED = "bugResolved"
 
 // Action creator
-export const bugAdded = description => (
-    {
-        type: BUG_ADDED,
-        payload: { description: description }
-});
 
-export const bugResolved = id => (
-    {
-        type: BUG_RESOLVED,
-        payload: { id: id } // => payload: { id }  cause id = id can duplicate
-    }
-);
+export const bugAdded = createAction("bugAdded");
+// export const bugAdded = description => (
+//     {
+//         type: BUG_ADDED,
+//         payload: { description: description }
+// });
+
+
+export const bugResolved = createAction("bugResolved");
+// export const bugResolved = id => (
+//     {
+//         type: BUG_RESOLVED,
+//         payload: { id: id } // => payload: { id }  cause id = id can duplicate
+//     }
+// );
+
+export const bugRemoved = createAction("bugRemoved")
 
 let lastId = 0;
 
 export default function reducer(state = [], action) {
 
     switch (action.type) {
-        case BUG_ADDED:
+        case bugAdded.type:
             return [
                 ...state,
                 {
@@ -33,10 +40,10 @@ export default function reducer(state = [], action) {
                 }
             ];
 
-        case BUG_REMOVED:
+        case bugRemoved.type:
             return state.filter(bug => bug.id !== action.payload.id);
 
-        case BUG_RESOLVED:
+        case bugResolved.type:
             return state.map(bug =>
                 bug.id !== action.payload.id ? bug : { ...bug, resolved: true });
 
