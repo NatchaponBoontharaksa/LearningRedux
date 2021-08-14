@@ -8,8 +8,8 @@ const unsubscribe = store.subscribe(() => {
     console.log("Store change: " + store.getState())
 });
 
-// store.dispatch(bugAdded({ description: "bug 123"}));
-// store.dispatch(bugAdded({ description: "bug 555"}));
+store.dispatch(bugAdded({ description: "bug 123"}));
+store.dispatch(bugAdded({ description: "bug 555"}));
 store.dispatch(projectAdded({ name: "project 1" }))
 
 
