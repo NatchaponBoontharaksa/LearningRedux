@@ -1,7 +1,8 @@
-const logger = store => next => action => {
-    console.log(store);
-    console.log(next);
-    console.log(action);
+
+// SNA
+const logger = param => store => next => action => {
+    console.log('param:', param);
+    next(action);
 }
 
 export default logger;
