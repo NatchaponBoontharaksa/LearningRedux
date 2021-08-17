@@ -9,7 +9,6 @@ const store = configureStore();
 store.dispatch(
     actions.apiCallBegan({
         url: "/bugs",
-        method: "get",
         onSuccess: "apiReceived",
     }
 ));
