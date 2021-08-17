@@ -5,15 +5,24 @@ import { userAdded } from './store/users';
 
 const store = configureStore();
 
-store.dispatch((dispatch, getState) => {
-    dispatch({
-        type: "error",
-        payload: {message: "An error occured."}
-    })
-    
-    // dispatch({ type: "bugsReceived", bugs: [1, 2, 3] });
-    // console.log(getState())
+store.dispatch({
+    type: 'apiCallBegan',
+    payload: {
+        url: "/bugs",
+        onSuccess: "bugsReceived",
+        onError: "apiRequestFailed"
+    }
 });
+
+// store.dispatch((dispatch, getState) => {
+//     dispatch({
+//         type: "error",
+//         payload: {message: "An error occured."}
+//     })
+    
+//     // dispatch({ type: "bugsReceived", bugs: [1, 2, 3] });
+//     // console.log(getState())
+// });
 
 // const unsubscribe = store.subscribe(() => {
 //     console.log("Store change: " + store.getState())
