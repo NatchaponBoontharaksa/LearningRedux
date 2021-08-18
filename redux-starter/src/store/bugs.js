@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {createSelector, reselect} from 'reselect';
+import { createSelector, reselect } from 'reselect';
+import { apiCallBegan } from './api'
+import moment from 'moment'
 
 let lastId = 0;
 
@@ -11,6 +13,21 @@ const slice = createSlice({
         lastFetch: null
     },
     reducers: {
+
+        bugsRequested: (bugs, action) => {
+            bugs.loading = true;
+        },
+
+        bugsRequestFailed: (bugs, action) => {
+            bugs.loading = false;
+        },
+
+        bugsReceived: (bugs, action) => {
+            bugs.list = action.payload;
+            bugs.loading = false;
+            bugs.lastFetch = Date.now();
+        },
+
         bugAdded: (bugs, action) => {
             bugs.list.push({
                 id: ++lastId,
@@ -25,20 +42,38 @@ const slice = createSlice({
         },
 
         bugRemoved: (bugs, action) => {
-            return bugs.list.filter((bug) => bug.id !== action.payload.id )
+            return bugs.list.filter((bug) => bug.id !== action.payload.id)
         },
 
         bugAssignedToUser: (bugs, action) => {
-            const {bugId, userId} = action.payload;
+            const { bugId, userId } = action.payload;
             const index = bugs.list.findIndex(bug => bug.id === bugId);
             bugs.list[index].userId = userId;
         }
     }
 })
 
-export const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser } = slice.actions;
+export const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser, bugsReceived, bugsRequested, bugsRequestFailed } = slice.actions;
 
 export default slice.reducer;
+
+// Action Creator
+const url = "bugs";
+export const loadBugs = () => (dispatch, getState) => {
+
+    const {lastFetch} = getState().entities.bugs;
+    const diffInMinutes = moment().diff(moment(lastFetch), 'minutes');
+    if (diffInMinutes < 10) return;
+
+    dispatch(
+        apiCallBegan({
+            url: url,
+            onStart: bugsRequested.type,
+            onSuccess: bugsReceived.type,
+            onError: bugsRequestFailed.type
+        })
+    );
+}
 
 
 // selector function
