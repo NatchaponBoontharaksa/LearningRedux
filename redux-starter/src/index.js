@@ -1,11 +1,14 @@
 import configureStore from './store/configureStore';
-import { bugAdded, bugRemoved, bugResolved, getUnresolvedBugs, bugAssignedToUser, getBugsByUser, loadBugs } from './store/bugs';
+import { loadBugs, addBug, resolveBug, assignBugToUser, getUnresolvedBugs, getBugsByUser } from './store/bugs';
 import { projectAdded } from './store/projects';
 import { userAdded } from './store/users';
 
 const store = configureStore();
 
 store.dispatch(loadBugs());
+
+store.dispatch(assignBugToUser(2, 5));
+// store.dispatch(loadBugs());
 
 // store.dispatch({
 //     type: 'apiCallBegan',

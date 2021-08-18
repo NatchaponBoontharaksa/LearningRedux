@@ -3,7 +3,7 @@ import { createSelector, reselect } from 'reselect';
 import { apiCallBegan } from './api'
 import moment from 'moment'
 
-let lastId = 0;
+// let lastId = 0;
 
 const slice = createSlice({
     name: 'bugs',
@@ -29,11 +29,12 @@ const slice = createSlice({
         },
 
         bugAdded: (bugs, action) => {
-            bugs.list.push({
-                id: ++lastId,
-                description: action.payload.description,
-                resolved: false
-            });
+            bugs.list.push(action.payload);
+            // bugs.list.push({
+            //     id: ++lastId,
+            //     description: action.payload.description,
+            //     resolved: false
+            // });
         },
 
         bugResolved: (bugs, action) => {
@@ -46,19 +47,19 @@ const slice = createSlice({
         },
 
         bugAssignedToUser: (bugs, action) => {
-            const { bugId, userId } = action.payload;
+            const { id: bugId, userId } = action.payload;
             const index = bugs.list.findIndex(bug => bug.id === bugId);
             bugs.list[index].userId = userId;
         }
     }
 })
 
-export const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser, bugsReceived, bugsRequested, bugsRequestFailed } = slice.actions;
+const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser, bugsReceived, bugsRequested, bugsRequestFailed } = slice.actions;
 
 export default slice.reducer;
 
 // Action Creator
-const url = "bugs";
+const url = "/bugs";
 export const loadBugs = () => (dispatch, getState) => {
 
     const {lastFetch} = getState().entities.bugs;
@@ -74,6 +75,27 @@ export const loadBugs = () => (dispatch, getState) => {
         })
     );
 }
+
+export const addBug = bug => apiCallBegan({
+    url,
+    method: "post",
+    data: bug,
+    onSuccess: bugAdded.type
+})
+
+export const resolveBug = id => apiCallBegan({
+    url: url + '/' + id,
+    method: 'patch',
+    data: {resolved: true},
+    onSuccess: bugResolved.type
+})
+
+export const assignBugToUser = (bugId, userId) => apiCallBegan({
+    url: url + '/' + bugId,
+    method: 'patch',
+    data: {userId},
+    onSuccess: bugAssignedToUser.type
+})
 
 
 // selector function
