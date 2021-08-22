@@ -2,7 +2,7 @@
 // SNA
 const logger = param => store => next => action => {
     // console.log('param:', param);
-    next(action);
+    return next(action);
 }
 
 export default logger;
