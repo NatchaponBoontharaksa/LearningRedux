@@ -10,6 +10,6 @@ import api from './middleware/api'
 export default function () {
     return configureStore({ 
         reducer,
-        middleware: [logger({description: 'console'}), func, toast, api]
+        middleware: [logger({description: 'console'}), toast, api]
      });
 }
