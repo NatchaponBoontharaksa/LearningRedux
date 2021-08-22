@@ -1,4 +1,4 @@
-import { addBug, resolveBug } from '../bugs';
+import { addBug, resolveBug, getUnresolvedBugs } from '../bugs';
 import { apiCallBegan } from '../api';
 import configureStore from '../configureStore';
 import axios from 'axios';
@@ -32,6 +32,30 @@ describe("bugsSlice", () => {
     });
 
     const bugsSlice = () => store.getState().entities.bugs;
+
+    const createState = () => ({
+        entities: {
+            bugs: {
+                list: [
+                    {
+                        id: 1,
+                        description: 'a',
+                        resolved: false
+                    },
+                    {
+                        id: 2,
+                        description: 'b',
+                        resolved: false
+                    },
+                    {
+                        id: 3,
+                        description: 'c',
+                        resolved: true
+                    }
+                ]
+            }
+        }
+    })
     
     it("should add the bug to the store if it's saved to the server", async () => {
         // Arrange 
@@ -59,6 +83,20 @@ describe("bugsSlice", () => {
 
         // Assert
         expect(bugsSlice().list).toHaveLength(0);
+    });
+
+    it("should get unresolved bug from server", async () => {
+        // Arrange 
+        // fakeAxios.onPatch("/bugs/1").reply(200, {id: 1, resolved: true});
+        fakeAxios.onPost("/bugs").reply(200, createState().entities);
+        fakeAxios.onGet("/bugs").reply(200, createState().entities.bugs.list.filter(bug => !bug.resolved))
+
+        // Act
+        await store.dispatch(addBug(createState().entities))
+        await store.dispatch(getUnresolvedBugs());
+        console.log(bugsSlice().list);
+        // Assert
+        expect(bugsSlice().list).toBe(true);
     });
 
     it("should change resolve status from false to true", async () => {
