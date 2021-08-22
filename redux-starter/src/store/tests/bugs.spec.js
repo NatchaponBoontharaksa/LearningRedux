@@ -1,4 +1,4 @@
-import { addBug, bugAdded } from '../bugs';
+import { addBug, resolveBug } from '../bugs';
 import { apiCallBegan } from '../api';
 import configureStore from '../configureStore';
 import axios from 'axios';
@@ -44,22 +44,46 @@ describe("bugsSlice", () => {
         // Act
         await store.dispatch(addBug(bug));
 
-        console.log("RETURN: ", bugsSlice().list);
-
         // Assert
         expect(bugsSlice().list).toContainEqual(savedBug);
     });
 
-    // it("should not add the bug to the store if it's not saved to the server", async () => {
-    //     // Arrange 
-    //     const bug = { description: "a" };
-    //     const savedBug = { ...bug, id: 1 };
-    //     fakeAxios.onPost("./bugs").reply(500, savedBug);
+    it("should not add the bug to the store if it's not saved to the server", async () => {
+        // Arrange 
+        const bug = { description: "a" };
+        const savedBug = { ...bug, id: 1 };
+        fakeAxios.onPost("/bugs").reply(500);
 
-    //     // Act
-    //     await store.dispatch(addBug(bug));
+        // Act
+        await store.dispatch(addBug(bug));
 
-    //     // Assert
-    //     expect(bugsSlice().list).toHaveLength(0);
-    // });
+        // Assert
+        expect(bugsSlice().list).toHaveLength(0);
+    });
+
+    it("should change resolve status from false to true", async () => {
+        // Arrange 
+        fakeAxios.onPatch("/bugs/1").reply(200, {id: 1, resolved: true});
+        fakeAxios.onPost("/bugs").reply(200, {id: 1});
+
+        // Act
+        await store.dispatch(addBug({}))
+        await store.dispatch(resolveBug(1));
+        // console.log(bugsSlice().list);
+        // Assert
+        expect(bugsSlice().list[0].resolved).toBe(true);
+    });
+
+    it("should not change resolve status from false to true", async () => {
+        // Arrange 
+        fakeAxios.onPatch("/bugs/1").reply(500);
+        fakeAxios.onPost("/bugs").reply(200, {id: 1});
+
+        // Act
+        await store.dispatch(addBug({}))
+        await store.dispatch(resolveBug(1));
+        // console.log(bugsSlice().list);
+        // Assert
+        expect(bugsSlice().list[0].resolved).not.toBe(true);
+    });
 });
