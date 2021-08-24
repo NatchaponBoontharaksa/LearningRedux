@@ -110,6 +110,18 @@ describe("bugsSlice", () => {
                     expect(bugsSlice().loading).toBe(false);
 
                 })
+                it("should be false if the server fails", async () => {
+                    fakeAxios.onGet("/bugs").reply(500);
+
+                    // const x = store.dispatch(loadBugs());
+
+                    await store.dispatch(loadBugs());
+
+                    // console.log("DEBUG", x);
+
+                    expect(bugsSlice().loading).toBe(false);
+
+                })
             })
         });
 
