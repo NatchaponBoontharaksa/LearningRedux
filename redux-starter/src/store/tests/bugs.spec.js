@@ -1,4 +1,4 @@
-import { addBug, resolveBug, getUnresolvedBugs, loadBugs } from '../bugs';
+import { addBug, resolveBug, getUnresolvedBugs, loadBugs, bugRemoved } from '../bugs';
 import { apiCallBegan } from '../api';
 import configureStore from '../configureStore';
 import axios from 'axios';
@@ -44,8 +44,6 @@ describe("bugsSlice", () => {
     it("should add the bug to the store if it's saved to the server", async () => {
         // Arrange 
         const bug = { description: "a" };
-        // const store = configureStore();
-
         const savedBug = { ...bug, id: 1 };
         fakeAxios.onPost("/bugs").reply(200, savedBug);
 
@@ -69,6 +67,7 @@ describe("bugsSlice", () => {
         expect(bugsSlice().list).toHaveLength(0);
     });
 
+
     describe("selectors", () => {
         it("getUnresolvedBugs", () => {
             // Arrange
@@ -88,8 +87,9 @@ describe("bugsSlice", () => {
     describe("loading bugs", () => {
         describe("if the bugs exist in the cache", () => {
             describe("if the bugs exist in the cache", () => {
+
                 it("they should not be fetched from the server again", async () => {
-                    fakeAxios.onGet("/bugs").reply(200, [{id: 1}]);
+                    fakeAxios.onGet("/bugs").reply(200, [{ id: 1 }]);
 
                     await store.dispatch(loadBugs());
                     await store.dispatch(loadBugs());
@@ -102,7 +102,7 @@ describe("bugsSlice", () => {
         describe("if the bugs don't exist in the cache", () => {
 
             it("they should be fetched from the server and put in the store", async () => {
-                fakeAxios.onGet("/bugs").reply(200, [{id: 1}]);
+                fakeAxios.onGet("/bugs").reply(200, [{ id: 1 }]);
 
                 await store.dispatch(loadBugs());
 
